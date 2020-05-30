@@ -267,28 +267,28 @@ shinyServer(function(input, output) {
     
     output$forecast_plot <- renderPlotly({
         df_inc_all <- as.incidence(df_forc_geo()$new_cases, dates=df_forc_geo()$date)
-        ann_text <- '(!) Warning: \nUnable to fit the model on selected data'
+        # ann_text <- '(!) Warning: \nUnable to fit the model on selected data'
         if (!is.null(model())){
             if(class(model())=='incidence_fit') {
                 p <- plot(df_inc_all, fit = model(), color = "#9fc2fc")
                 info <- model()$info
-                ann_text <- paste0('Model results:',
-                                  '\n    r_est = ', round(info$r*100, 2), '%',
-                                  ' (CI=[', round(info$r.conf[1]*100, 2), '%',
-                                  round(info$r.conf[2]*100,2), '%]')
+                # ann_text <- paste0('Model results:',
+                #                   '\n    r_est = ', round(info$r*100, 2), '%',
+                #                   ' (CI=[', round(info$r.conf[1]*100, 2), '%,',
+                #                   round(info$r.conf[2]*100,2), '%]')
             } else {
                 p <- plot(df_inc_all, fit = model()$fit, color = "#9fc2fc") 
                 f <- get_fit(model()$fit)
-                ann_text <- paste0('Model results:',
-                                   '\n * estimated peak date: ', model()$split,
-                                   '\n * "before the peak" model:',
-                                   '\n    r_est = ', round(f$before$info$r*100, 2), '%',
-                                   ' (CI=[', round(f$before$info$r.conf[1]*100, 2), '%, ',
-                                   round(f$before$info$r.conf[2]*100,2), '%]',
-                                   '\n * "after the peak" model:',
-                                   '\n    r_est = ', round(f$after$info$r*100, 2), '%',
-                                   ' (CI=[', round(f$after$info$r.conf[1]*100, 2), '%, ',
-                                   round(f$after$info$r.conf[2]*100,2), '%]')
+                # ann_text <- paste0('Model results:',
+                #                    '\n * estimated peak date: ', model()$split,
+                #                    '\n * "before the peak" model:',
+                #                    '\n    r_est = ', round(f$before$info$r*100, 2), '%',
+                #                    ' (CI=[', round(f$before$info$r.conf[1]*100, 2), '%, ',
+                #                    round(f$before$info$r.conf[2]*100,2), '%]',
+                #                    '\n * "after the peak" model:',
+                #                    '\n    r_est = ', round(f$after$info$r*100, 2), '%',
+                #                    ' (CI=[', round(f$after$info$r.conf[1]*100, 2), '%, ',
+                #                    round(f$after$info$r.conf[2]*100,2), '%]')
                 # print(ann_text)
             }
             p <- p  +
@@ -312,7 +312,7 @@ shinyServer(function(input, output) {
             if(class(model())=='incidence_fit') {
                 info <- model()$info
                 s1 <- paste0('   r_est = ', round(info$r*100, 2), '%,')
-                s2 <- paste0('----  conf.int: [', round(info$r.conf[1]*100, 2), '%',
+                s2 <- paste0('----  conf.int: [', round(info$r.conf[1]*100, 2), '%, ',
                              round(info$r.conf[2]*100,2), '%]')
                 res <- paste(s1, s2, sep = '<br/>')
             } else {
