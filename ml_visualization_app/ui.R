@@ -44,20 +44,22 @@ shinyUI(navbarPage(
         h3('Metrics'),
         p('Metrics tab consists of several reports:'),
         tags$ul(
-          tags$li("Annotation Chart: dives the analyst an overview of pandemic metrics and compare the situation in different states."),
-          tags$li("Motion Chart: gives the analyst an oportunity to observe the dynamic of pandemic over time for specified states and metrics."),
-          tags$li("Geo Chart: quick overview of geo distribution with an ability to observe mertics in dynamic.")
+          tags$li("Annotation Chart: gives the analyst an overview of pandemic metrics and to compare the situation in different states."),
+          tags$li("Motion Chart: allows the analyst to observe the dynamic of pandemic over time for specified states."),
+          tags$li("Geo Chart: a quick overview of geo distribution with an ability to observe metrics in dynamic.")
         ),
         
         h3('Prediction'),
-        p('This section gets the data for a specified geo region (particular state OR the whole United States) and ties to fit a simple linear model for the incidence:'),   
+        p('This section gets the data for a specified geo region (particular state OR the whole United States) and tries to fit a simple linear model for the incidence:'),   
         code('log(y) = r*t + b'),
-        p("Depending on the area selected the framework tries to find the epidemic peak date and fit two separate models for the data before the peak and the data after the peak."),
+        p(),
+        p('The analyst is asked to select the area with on the first plot to launch the fitting process on selected data.'),
+        p("Depending on the selected subset of points the framework tries to find the epidemic peak date and fit two separate models for the data before the peak and the data after the peak."),
         p("If there is no peak found, then only one model is fitted."),
-        p("As a result we'll have growth rate with confidence bounds and if we're lucky - negative growth rate after the peak with corresponding confidence bounds."),
-        p('The analyst is asked to select the area with on the first plot to launch fitting process on selected data.'),
+        p("As a result, we'll have a growth rate with confidence bounds and if we're lucky - negative growth rate after the peak with corresponding confidence bounds."),
         tags$br(),
-        em('All the modeling is being made using "incidence" package. Find more on Citation tab.')
+        em('All the modeling is being made using "incidence" package. Find more on Citation tab.'),
+        p()
     ),
     
     # main panel
