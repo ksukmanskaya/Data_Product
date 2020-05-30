@@ -19,7 +19,7 @@ library(tidyr)
 
 ## Introduction
 
-- RShiny COVID-19 Analytics App built based on data collected by Jonh Hopkins University 
+- RShiny COVID-19 Analytics App built based on data collected by Jonh Hopkins University. For more information proceed [here](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data)
 
 - The purpose of the App is to keep track of the pandemic and get insights on current trends
 
