@@ -11,7 +11,7 @@
 
 # Define UI for application that draws a histogram
 shinyUI(navbarPage(
-    'COVID-19 viz',
+    'COVID-19 analytics',
     # shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
     theme = shinytheme("flatly"),
     
@@ -19,9 +19,10 @@ shinyUI(navbarPage(
     tabPanel(
         'Documentation',
         h1('Intro'),
-        p("This is the RShiny app for vizualizing recent COVID-19 data in Unite States collected by John Hopkins University.
-        and fitting a simple linear model for the pandemic development for specified geo region."),
+        p("This is the RShiny app for visualizing recent COVID-19 data in the United States collected by John Hopkins University 
+        and fitting a simple linear model of the pandemic trends for the specified geo region."),
         tags$a(href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data", "For further information proceed here"),
+        p(),
         p("Please read the inscturction before going to the next pages, as the whole data preparation steps are being made right after
           launching the app, so it could take some time to produce output plots and data tables."),
         br(),
@@ -52,14 +53,17 @@ shinyUI(navbarPage(
         h3('Prediction'),
         p('This section gets the data for a specified geo region (particular state OR the whole United States) and tries to fit a simple linear model for the incidence:'),   
         code('log(y) = r*t + b'),
-        p(),
+        br(),
         p('The analyst is asked to select the area with on the first plot to launch the fitting process on selected data.'),
         p("Depending on the selected subset of points the framework tries to find the epidemic peak date and fit two separate models for the data before the peak and the data after the peak."),
         p("If there is no peak found, then only one model is fitted."),
         p("As a result, we'll have a growth rate with confidence bounds and if we're lucky - negative growth rate after the peak with corresponding confidence bounds."),
         tags$br(),
         em('All the modeling is being made using "incidence" package. Find more on Citation tab.'),
-        p()
+        p(),
+        h1('About'),
+        p('Author: Ksenia Sukmanskaya'),
+        p('This App was built as a part of a Data Science Specialization by  Hopkins University on Coursera')
     ),
     
     # main panel
