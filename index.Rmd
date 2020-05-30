@@ -1,0 +1,79 @@
+---
+title: "COVID-19 Analytics App "
+author: "Ksenia Sukmanskaya"
+date: "5/30/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE, message=F}
+knitr::opts_chunk$set(echo = FALSE)
+library(incidence)
+library(ggplot2)
+library(googleVis)
+op <- options(gvis.plot.tag='chart')
+suppressPackageStartupMessages(library(googleVis))
+library(data.table)
+library(dplyr)
+library(tidyr)
+```
+
+## Introduction
+
+- RShiny COVID-19 Analytics App built based on data collected by Jonh Hopkins University 
+
+- The purpose of the App is to keep track of the pandemic and get insights on current trends
+
+## Advantages
+
+- Easy to use
+
+- Up-to-date: JHU updates their reports daily
+
+- Interpretable: reports on 'Metrics' tab include valuable information for geo region comparison
+
+- Valuable insights: model fitting helps to understand what's the situation in a particular region and has reached a peak yet or not
+
+## Insights: New York vs California
+
+New cases curve (as of 2020-05-30) in New York and Califormia states. As we can see, CA doesn't seem to have reached its peak, on the contrary, NY is doing great.
+```{r cars, echo=FALSE, message=FALSE, results='asis'}
+df <- read.table('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv', header = T, sep = ',', quote = '"')
+df <- df %>% filter(Province_State %in% c('New York', 'California')) %>%
+  gather('date', 'confirmed', -c(1:11)) %>%
+  mutate(date = as.Date(date, format='X%m.%d.%y')) %>%
+  group_by_at(names(df)[1:11]) %>%
+  mutate(new_cases=replace_na(confirmed-lag(confirmed, n=1, order_by=date), 0)) %>%
+  ungroup() %>%
+  group_by(.dots = c('Province_State', 'Country_Region', 'date')) %>%
+  summarise(confirmed=sum(confirmed), new_cases=sum(new_cases)) %>%
+  ungroup() %>%
+  filter(confirmed > 0) 
+m <- gvisAnnotationChart(df,  datevar='date', numvar='new_cases', idvar='Province_State')
+plot(m)
+```
+
+## Prediction example: California
+
+Model tries to find the peak date and fit 2 separate models before and after the peak, otherwise - just 1 fit for the exponential growth.
+
+```{r incidence_prediction, echo=F, message=FALSE, results='asis', warning=F}
+df_filt <- df %>% filter(Province_State=='California')
+df_inc <- as.incidence(df_filt$new_cases, dates=df_filt$date)
+early.fit <- fit(df_inc[50:100])
+ann_text <- paste0('r_est = ', round(early.fit$info$r*100, 2),
+                   '%\n  conf.int: [', round(early.fit$info$r.conf[1]*100, 2),
+                   '%, ', round(early.fit$info$r.conf[2]*100,2), '%]'
+                   )
+p <- plot(df_inc, fit = early.fit, color = "#9fc2fc") + 
+  geom_line(data=df_filt, aes(date, new_cases), color='blue')+
+  ggtitle('California incidence fit') +
+  theme(legend.title = element_blank())  +
+  ylim(c(0,max(df_filt$new_cases)*1.5)) +
+  geom_label(x = as.Date('2020-03-15'), 
+           y = max(df_filt$new_cases)*1.2, 
+           label = ann_text,
+           colour='black', fill='green', size=5)
+
+p
+```
+

@@ -25,7 +25,6 @@ shinyServer(function(input, output) {
         options = list(scrollX = TRUE)
     )
     
-    
     # ------------------
     # Geo map
     # total numbers for map tab
@@ -111,10 +110,7 @@ shinyServer(function(input, output) {
                              radius=~death_rate*100, color='black', 
                              group='Death_rates', 
                              popup=~paste0(Province_State, ': death rate - ', round(death_rate*100,2), '%')) #%>%
-            # addLegend(group = 'Death_rates', color='black', title='Death rate', )
     })
-    
-    
     
     # -------------
     # Metrics
@@ -170,8 +166,6 @@ shinyServer(function(input, output) {
         
         return(res)
     })
-    
-    
     
     # Metrics panel
     # geo chart filter
@@ -282,7 +276,6 @@ shinyServer(function(input, output) {
                                   '\n    r_est = ', round(info$r*100, 2), '%',
                                   ' (CI=[', round(info$r.conf[1]*100, 2), '%',
                                   round(info$r.conf[2]*100,2), '%]')
-                # print(ann_text)
             } else {
                 p <- plot(df_inc_all, fit = model()$fit, color = "#9fc2fc") 
                 f <- get_fit(model()$fit)
@@ -298,7 +291,7 @@ shinyServer(function(input, output) {
                                    round(f$after$info$r.conf[2]*100,2), '%]')
                 # print(ann_text)
             }
-            p <- p + ggtitle('Model fit:') +
+            p <- p  +
                 geom_point(data=df_forc_geo(), aes(date, new_cases), color='blue') +
                 geom_line(data=df_forc_geo(), aes(date, new_cases), color='blue') +
                 theme(legend.title = element_blank())  +
@@ -339,94 +332,6 @@ shinyServer(function(input, output) {
         
         return(HTML(res))
     })
-    
-    output$ann_text <- renderText({
-        if (!is.null(model())){
-            if(class(model())=='incidence_fit') {
-                info <- model()$info
-                ann_text <- paste0('Model results:',
-                                   '\n    r_est = ', round(info$r*100, 2), '%',
-                                   ' (CI=[', round(info$r.conf[1]*100, 2), '%',
-                                   round(info$r.conf[2]*100,2), '%]')
-            } else {
-                f <- get_fit(model()$fit)
-                paste0('Model results:',
-                       '\n * estimated peak date: ', model()$split,
-                       '\n * "before the peak" model:',
-                       '\n    r_est = ', round(f$before$info$r*100, 2), '%',
-                       ' (CI=[', round(f$before$info$r.conf[1]*100, 2), '%, ',
-                       round(f$before$info$r.conf[2]*100,2), '%]',
-                       '\n * "after the peak" model:',
-                       '\n    r_est = ', round(f$after$info$r*100, 2), '%',
-                       ' (CI=[', round(f$after$info$r.conf[1]*100, 2), '%, ',
-                       round(f$after$info$r.conf[2]*100,2), '%]')
-            }
-        } else '(!) Warning: \nUnable to fit the model on selected data'
-    })
-    
-    
-    output$forecast_plot2 <- renderPlotly({
-        brushed_data <- brushedPoints(
-            df_forc_geo(),
-            input$plot_brush,
-            xvar='date', yvar='new_cases'
-        )
-        model <- NULL
-        # print(head(brushed_data))
-        if (nrow(brushed_data) < 10) {
-            return(NULL)
-        } else {
-            df_inc <- as.incidence(brushed_data$new_cases, dates=brushed_data$date)
-            df_inc_all <- as.incidence(df_forc_geo()$new_cases, dates=df_forc_geo()$date)
-            model <- tryCatch(fit_optim_split(df_inc),
-                     error = function(e){
-                         message("An error occurred:\n", e)
-                         fit(df_inc)
-                     },
-                     warning = function(w){
-                         message("A warning occured:\n", w)
-                         fit(df_inc)
-                     },
-                     finally = {
-                         message("Finally done!")
-                     })
-        
-            if (!is.null(model)){
-                if(class(model)=='incidence_fit') {
-                    p <- plot(df_inc_all, fit = model, color = "#9fc2fc") 
-                } else {
-                    p <- plot(df_inc_all, fit = model$fit, color = "#9fc2fc") 
-                }
-                p + ggtitle('Some title') +
-                    theme(legend.title = element_blank())  +
-                    ylim(c(0,max(df$new_cases)*1.5))
-            } else {
-                p <- ggplot(df_forc_geo(), aes(date, new_cases)) +
-                    geom_point(color='red') +
-                    geom_line(color='red') +
-                    geom_bar(stat='identity', fill='#9fc2fc') +
-                    ggtitle('(!) Warning: Unable to fit the model (too few points selected)') +
-                    ylim(c(0, max(df_forc_geo()$new_cases)))
-            }
-            hide_legend(ggplotly(p))
-        }
-        
-        
-    })
-    
-    # model <- reacive({
-    #     df_inc <- as.incidence(df_forc_geo()$new_cases, dates=df_forc_geo()$date)
-    #     brushed_data <- brushedPoints(
-    #         df_forc_geo(), 
-    #         input$plot_brush,
-    #         xvar='date', yvar='Volume'
-    #     )
-    #     print(dim(brushed_data))
-    #     if (nrow(brushed_data) < 2) return(NULL)
-    #     lm(Volume~Girth, brushed_data)
-    # })
-    
    
-    
-
+   
 })
